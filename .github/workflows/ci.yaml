@@ -63,6 +63,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
     needs: build
+    permissions:
+      contents: write
     steps:
       - name: Download artifacts from build stage
         uses: actions/download-artifact@v4
@@ -71,8 +73,7 @@ jobs:
           path: artifacts
       - name: Compress release directory into a versioned ZIP file
         run: cd artifacts && zip -r "../openmower-cli-${{ github.ref_name }}.zip" .
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - uses: softprops/action-gh-release@v2
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: "openmower-cli-${{ github.ref_name }}.zip"
